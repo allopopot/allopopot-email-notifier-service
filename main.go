@@ -5,6 +5,7 @@ import (
 	"allopopot-email-service/queues"
 	"fmt"
 	"log"
+	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -33,7 +34,21 @@ func InitExchange() *amqp.Channel {
 	return ch
 }
 
+func TempFolderPurgeService() {
+	timer := time.NewTicker(10 * time.Minute)
+	for {
+		select {
+		case <-timer.C:
+			log.Println("Purging Empty Folder ... ")
+			config.PurgeEmptyFolders("./temp")
+			log.Println("Purging Empty Folder Complete ... ")
+		}
+	}
+}
+
 func main() {
+	go TempFolderPurgeService()
+
 	channel := InitExchange()
 	queues.InitEmailDispatcherQueue(channel)
 	defer channel.Close()

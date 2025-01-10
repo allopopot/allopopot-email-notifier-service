@@ -40,7 +40,6 @@ func PurgeEmptyFolders(dir string) error {
 			if err != nil {
 				return fmt.Errorf("error removing directory %s: %w", path, err)
 			}
-			fmt.Printf("Removed empty folder: %s\n", path)
 		}
 
 		return nil
